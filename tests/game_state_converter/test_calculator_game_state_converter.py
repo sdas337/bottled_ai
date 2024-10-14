@@ -1,13 +1,15 @@
 import unittest
+import pickle
 
 from rs.calculator.enums.card_id import CardId
 from rs.calculator.enums.potion_id import PotionId
 from rs.calculator.enums.power_id import PowerId
 from rs.calculator.enums.relic_id import RelicId
-from rs.calculator.game_state_converter import create_battle_state
+from rs.calculator.game_state_converter import create_battle_state, battlestate_deepcopy
 from rs.calculator.interfaces.memory_items import MemoryItem
 from rs.machine.orb import Orb
 from test_helpers.resources import load_resource_state
+
 
 
 class GameStateConverterTest(unittest.TestCase):
@@ -118,3 +120,10 @@ class GameStateConverterTest(unittest.TestCase):
         state = load_resource_state("battles/with_orbs/defect_very_without_orbs.json")
         orbs = state.get_player_orbs()
         self.assertEqual(0, len(orbs))
+
+    def test_battle_state_copy(self):
+        state = load_resource_state('battles/general/complex_case.json')
+        original_battle_state = create_battle_state(state)
+        self.assertEqual(pickle.dumps(original_battle_state, -1),
+                         pickle.dumps(battlestate_deepcopy(original_battle_state), -1))
+
